@@ -565,6 +565,21 @@
     }
   };
 
+  var overflowState = null;
+  var disableTouchOverflow = function(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!overflowState) {
+      overflowState = document.body.style.overflow;
+    }
+    document.body.style.overflow = 'hidden';
+  };
+
+  var restoreTouchOverflow = function() {
+    document.body.style.overflow = overflowState;
+  };
+
   /*
    * Animations
    */
@@ -583,6 +598,10 @@
     if (onComplete !== null && typeof onComplete === 'function') {
       onComplete.call(this, modal);
     }
+    disableTouchOverflow();
+    ['scroll', 'touchmove'].forEach(function(e) {
+      window.addEventListener(e, disableTouchOverflow, false);
+    });
   };
 
   /*
@@ -1202,6 +1221,10 @@
     if (onComplete !== null && typeof onComplete === 'function') {
       onComplete.call(this, modal);
     }
+    ['scroll', 'touchmove'].forEach(function(e) {
+      window.removeEventListener(e, disableTouchOverflow);
+    });
+    restoreTouchOverflow();
   };
 
   /*
